@@ -14,19 +14,4 @@ public class Junction : MonoBehaviour
     public Spline.Direction rightDirection;
     public Spline.Direction upDirection;
     public Spline.Direction downDirection;
-
-    private void Update()
-    {
-        if (GameManager.train.spline == leftTrail) leftDirection = Spline.Direction.Backward;
-        else if (GameManager.train.spline != leftTrail) leftDirection = Spline.Direction.Forward;
-
-        if (GameManager.train.spline == rightTrail) rightDirection = Spline.Direction.Backward;
-        else if (GameManager.train.spline != rightTrail) rightDirection = Spline.Direction.Forward;
-
-        if (GameManager.train.spline == upTrail) upDirection = Spline.Direction.Backward;
-        else if (GameManager.train.spline != upTrail) upDirection = Spline.Direction.Forward;
-
-        if (GameManager.train.spline == downTrail) downDirection = Spline.Direction.Backward;
-        else if (GameManager.train.spline != downTrail) downDirection = Spline.Direction.Forward;
-    }
 }
