@@ -12,7 +12,13 @@ public class GameManager : MonoBehaviour
 
     private SplineComputer leftTrail;
     private SplineComputer rightTrail;
-    private SplineComputer forwardTrail;
+    private SplineComputer upTrail;
+    private SplineComputer downTrail;
+
+    private Spline.Direction leftDirection;
+    private Spline.Direction rightDirection;
+    private Spline.Direction upDirection;
+    private Spline.Direction downDirection;
 
     private SplineTracer.NodeConnection reachedNode;
 
@@ -25,6 +31,8 @@ public class GameManager : MonoBehaviour
         trailSpeed = train.followSpeed;
 
         train.onNode += NodeReached; //subscribe a method for the node touch event
+
+        train.spline.linearAverageDirection = true;
     }
 
     private void NodeReached(List<SplineTracer.NodeConnection> passed)
@@ -35,12 +43,16 @@ public class GameManager : MonoBehaviour
 
             //get the connected trails from the touched node
             leftTrail = reachedNode.node.GetComponent<Junction>().leftTrail;
+            leftDirection = reachedNode.node.GetComponent<Junction>().leftDirection;
+
             rightTrail = reachedNode.node.GetComponent<Junction>().rightTrail;
-            forwardTrail = reachedNode.node.GetComponent<Junction>().forwardTrail;
+            rightDirection = reachedNode.node.GetComponent<Junction>().rightDirection;
 
-            if (leftTrail == null && rightTrail == null) oneChoice = true;
+            upTrail = reachedNode.node.GetComponent<Junction>().upTrail;
+            upDirection = reachedNode.node.GetComponent<Junction>().upDirection;
 
-            if (oneChoice) GoForward(); //if there is only one trail choice, choose it automatically
+            downTrail = reachedNode.node.GetComponent<Junction>().downTrail;
+            downDirection = reachedNode.node.GetComponent<Junction>().downDirection;
 
             atNode = true;
         }
@@ -48,47 +60,74 @@ public class GameManager : MonoBehaviour
 
     public void GoLeft()
     {
-        train.followSpeed = 0f;
-        train.enabled = false;
-        train.SetPercent(0.0);
-        train.spline = leftTrail;
-        train.enabled = true;
-        train.followSpeed = trailSpeed;
+        if (leftTrail != null)
+        {
+            train.direction = leftDirection;
+            train.followSpeed = 0f;
+            train.enabled = false;
+            train.SetPercent(0.0);
+            train.spline = leftTrail;
+            train.enabled = true;
+            train.followSpeed = trailSpeed;
 
-        StartCoroutine(UnblockJunctionSensor(0.2f));
+            StartCoroutine(UnblockJunctionSensor(0.2f));
+        }
     }
 
     public void GoRight()
     {
-        train.followSpeed = 0f;
-        train.enabled = false;
-        train.SetPercent(0.0);
-        train.spline = rightTrail;
-        train.enabled = true;
-        train.followSpeed = trailSpeed;
+        if(rightTrail != null)
+        {
+            train.direction = rightDirection;
+            train.followSpeed = 0f;
+            train.enabled = false;
+            train.SetPercent(0.0);
+            train.spline = rightTrail;
+            train.enabled = true;
+            train.followSpeed = trailSpeed;
 
-        StartCoroutine(UnblockJunctionSensor(0.2f));
+            StartCoroutine(UnblockJunctionSensor(0.2f));
+        }
     }
 
-    public void GoForward()
+    public void GoDown()
     {
-        train.followSpeed = 0f;
-        train.enabled = false;
-        train.SetPercent(0.0);
-        train.spline = forwardTrail;
-        train.enabled = true;
-        train.followSpeed = trailSpeed;
+        if(downTrail != null)
+        {
+            train.direction = downDirection;
+            train.followSpeed = 0f;
+            train.enabled = false;
+            train.SetPercent(0.0);
+            train.spline = downTrail;
+            train.enabled = true;
+            train.followSpeed = trailSpeed;
 
-        StartCoroutine(UnblockJunctionSensor(0.2f));
+            StartCoroutine(UnblockJunctionSensor(0.2f));
+        }
+    }
 
-        oneChoice = false;
+    public void GoUp()
+    {
+        if(upTrail != null)
+        {
+            train.direction = upDirection;
+            train.followSpeed = 0f;
+            train.enabled = false;
+            train.SetPercent(0.0);
+            train.spline = upTrail;
+            train.enabled = true;
+            train.followSpeed = trailSpeed;
+
+            StartCoroutine(UnblockJunctionSensor(0.2f));
+        }
     }
 
     private void ClearChoices()
     {
         leftTrail = null;
         rightTrail = null;
-        forwardTrail = null;
+        upTrail = null;
+        downTrail = null;
     }
 
     private IEnumerator UnblockJunctionSensor(float delay)
