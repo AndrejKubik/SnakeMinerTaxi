@@ -8,7 +8,7 @@ public class GameManager : MonoBehaviour
 {
     public SplineFollower train;
 
-    private float trailSpeed;
+    public static float trailSpeed;
 
     private SplineComputer leftTrail;
     private SplineComputer rightTrail;
@@ -21,64 +21,40 @@ public class GameManager : MonoBehaviour
     private Spline.Direction downDirection;
 
     private SplineTracer.NodeConnection reachedNode;
-    [SerializeField] private bool atNode;
+
+    public bool nodeEntered;
 
     private void Start()
     {
-        train = GetComponent<SplineFollower>(); //store the spline follower 
-        trailSpeed = train.followSpeed;
-
         train.onNode += NodeReached; //subscribe a method for the node touch event
-
-        train.spline.linearAverageDirection = true;
     }
 
     private void NodeReached(List<SplineTracer.NodeConnection> passed)
     {
-        if(!atNode)
+        nodeEntered = !nodeEntered; //change the juntion-enter state
+
+        if(nodeEntered) //if the junction has just been entered
         {
-            
+            reachedNode = passed[0]; //store the first touched node into a variable for simpliticy sake
 
-            atNode = true;
+            LoadJunctionData();
+
+            BlockReverse();
+
+            ShowJunctionButtons();
         }
-
-        reachedNode = passed[0]; //store the first touched node into a variable for simpliticy sake
-
-        //get the connected trails from the touched node
-        leftTrail = reachedNode.node.GetComponent<Junction>().leftTrail;
-        leftDirection = reachedNode.node.GetComponent<Junction>().leftDirection;
-
-        rightTrail = reachedNode.node.GetComponent<Junction>().rightTrail;
-        rightDirection = reachedNode.node.GetComponent<Junction>().rightDirection;
-
-        upTrail = reachedNode.node.GetComponent<Junction>().upTrail;
-        upDirection = reachedNode.node.GetComponent<Junction>().upDirection;
-
-        downTrail = reachedNode.node.GetComponent<Junction>().downTrail;
-        downDirection = reachedNode.node.GetComponent<Junction>().downDirection;
     }
 
+    //BUTTON CONTROL
     public void GoLeft()
     {
         if (leftTrail != null)
         {
-            train.followSpeed = 0f;
-            train.enabled = false;
-            train.spline = leftTrail;
-            train.enabled = true;
+            ChangeTrail(leftTrail);
 
-            if(leftDirection == Spline.Direction.Forward)
-            {
-                train.SetPercent(0.0);
-                train.followSpeed = trailSpeed;
-            }
-            else if (leftDirection == Spline.Direction.Backward)
-            {
-                train.SetPercent(1.0);
-                train.followSpeed = -trailSpeed;
-            }
+            SetCorrectDirection(leftDirection);
 
-            StartCoroutine(UnblockJunctionSensor(0.2f));
+            ClearChoices();
         }
     }
 
@@ -86,23 +62,11 @@ public class GameManager : MonoBehaviour
     {
         if(rightTrail != null)
         {
-            train.followSpeed = 0f;
-            train.enabled = false;
-            train.spline = rightTrail;
-            train.enabled = true;
+            ChangeTrail(rightTrail);
 
-            if (rightDirection == Spline.Direction.Forward)
-            {
-                train.SetPercent(0.0);
-                train.followSpeed = trailSpeed;
-            }
-            else if (rightDirection == Spline.Direction.Backward)
-            {
-                train.SetPercent(1.0);
-                train.followSpeed = -trailSpeed;
-            }
+            SetCorrectDirection(rightDirection);
 
-            StartCoroutine(UnblockJunctionSensor(0.2f));
+            ClearChoices();
         }
     }
 
@@ -110,23 +74,11 @@ public class GameManager : MonoBehaviour
     {
         if(downTrail != null)
         {
-            train.followSpeed = 0f;
-            train.enabled = false;
-            train.spline = downTrail;
-            train.enabled = true;
+            ChangeTrail(downTrail);
 
-            if (downDirection == Spline.Direction.Forward)
-            {
-                train.SetPercent(0.0);
-                train.followSpeed = trailSpeed;
-            }
-            else if (downDirection == Spline.Direction.Backward)
-            {
-                train.SetPercent(1.0);
-                train.followSpeed = -trailSpeed;
-            }
+            SetCorrectDirection(downDirection);
 
-            StartCoroutine(UnblockJunctionSensor(0.2f));
+            ClearChoices();
         }
     }
 
@@ -134,24 +86,43 @@ public class GameManager : MonoBehaviour
     {
         if(upTrail != null)
         {
-            train.followSpeed = 0f;
-            train.enabled = false;
-            train.spline = upTrail;
-            train.enabled = true;
+            ChangeTrail(upTrail);
 
-            if (upDirection == Spline.Direction.Forward)
-            {
-                train.SetPercent(0.0);
-                train.followSpeed = trailSpeed;
-            }
-            else if (upDirection == Spline.Direction.Backward)
-            {
-                train.SetPercent(1.0);
-                train.followSpeed = -trailSpeed;
-            }
-
-            StartCoroutine(UnblockJunctionSensor(0.2f));
+            SetCorrectDirection(upDirection);
+            
+            ClearChoices();
         }
+    }
+
+    //TRAIL SWITCH
+    private void ChangeTrail(SplineComputer targetTrail)
+    {
+        train.followSpeed = 0f;
+        train.enabled = false;
+        train.spline = targetTrail;
+        train.enabled = true;
+    }
+
+    private void SetCorrectDirection(Spline.Direction targetDirection)
+    {
+        if (targetDirection == Spline.Direction.Forward)
+        {
+            train.SetPercent(0.0);
+            train.followSpeed = trailSpeed;
+        }
+        else if (targetDirection == Spline.Direction.Backward)
+        {
+            train.SetPercent(1.0);
+            train.followSpeed = -trailSpeed;
+        }
+    }
+
+    private void BlockReverse()
+    {
+        if (upTrail == train.spline) upTrail = null;
+        if (downTrail == train.spline) downTrail = null;
+        if (leftTrail == train.spline) leftTrail = null;
+        if (rightTrail == train.spline) rightTrail = null;
     }
 
     private void ClearChoices()
@@ -162,10 +133,27 @@ public class GameManager : MonoBehaviour
         downTrail = null;
     }
 
-    private IEnumerator UnblockJunctionSensor(float delay)
+    //JUNCTION APPROACH
+    private void LoadJunctionData()
     {
-        ClearChoices();
-        yield return new WaitForSeconds(delay);
-        atNode = false;
+        //get the connected trails from the touched node
+        leftTrail = reachedNode.node.GetComponent<Junction>().leftTrail;
+        rightTrail = reachedNode.node.GetComponent<Junction>().rightTrail;
+        upTrail = reachedNode.node.GetComponent<Junction>().upTrail;
+        downTrail = reachedNode.node.GetComponent<Junction>().downTrail;
+
+        //get the correct follow direction for each connected trail from the node
+        leftDirection = reachedNode.node.GetComponent<Junction>().leftDirection;
+        rightDirection = reachedNode.node.GetComponent<Junction>().rightDirection;
+        upDirection = reachedNode.node.GetComponent<Junction>().upDirection;
+        downDirection = reachedNode.node.GetComponent<Junction>().downDirection;
+    }
+
+    private void ShowJunctionButtons()
+    {
+        if (leftTrail != null) UIController.LeftButton.SetActive(true);
+        if (rightTrail != null) UIController.RightButton.SetActive(true);
+        if (upTrail != null) UIController.UpButton.SetActive(true);
+        if (downTrail != null) UIController.DownButton.SetActive(true);
     }
 }
