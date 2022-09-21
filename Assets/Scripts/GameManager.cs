@@ -29,11 +29,12 @@ public class GameManager : MonoBehaviour
         train.onNode += NodeReached; //subscribe a method for the node touch event
     }
 
+    //JUNCTION APPROACH
     private void NodeReached(List<SplineTracer.NodeConnection> passed)
     {
         nodeEntered = !nodeEntered; //change the juntion-enter state
 
-        if(nodeEntered) //if the junction has just been entered
+        if (nodeEntered) //if the junction has just been entered
         {
             reachedNode = passed[0]; //store the first touched node into a variable for simpliticy sake
 
@@ -43,6 +44,27 @@ public class GameManager : MonoBehaviour
 
             ShowJunctionButtons();
         }
+    }
+    private void LoadJunctionData()
+    {
+        //get the connected trails from the touched node
+        leftTrail = reachedNode.node.GetComponent<Junction>().leftTrail;
+        rightTrail = reachedNode.node.GetComponent<Junction>().rightTrail;
+        upTrail = reachedNode.node.GetComponent<Junction>().upTrail;
+        downTrail = reachedNode.node.GetComponent<Junction>().downTrail;
+
+        //get the correct follow direction for each connected trail from the node
+        leftDirection = reachedNode.node.GetComponent<Junction>().leftDirection;
+        rightDirection = reachedNode.node.GetComponent<Junction>().rightDirection;
+        upDirection = reachedNode.node.GetComponent<Junction>().upDirection;
+        downDirection = reachedNode.node.GetComponent<Junction>().downDirection;
+    }
+    private void ShowJunctionButtons()
+    {
+        if (leftTrail != null) UIController.LeftButton.SetActive(true);
+        if (rightTrail != null) UIController.RightButton.SetActive(true);
+        if (upTrail != null) UIController.UpButton.SetActive(true);
+        if (downTrail != null) UIController.DownButton.SetActive(true);
     }
 
     //BUTTON CONTROL
@@ -57,7 +79,6 @@ public class GameManager : MonoBehaviour
             ClearChoices();
         }
     }
-
     public void GoRight()
     {
         if(rightTrail != null)
@@ -69,7 +90,6 @@ public class GameManager : MonoBehaviour
             ClearChoices();
         }
     }
-
     public void GoDown()
     {
         if(downTrail != null)
@@ -81,7 +101,6 @@ public class GameManager : MonoBehaviour
             ClearChoices();
         }
     }
-
     public void GoUp()
     {
         if(upTrail != null)
@@ -98,11 +117,8 @@ public class GameManager : MonoBehaviour
     private void ChangeTrail(SplineComputer targetTrail)
     {
         train.followSpeed = 0f;
-        train.enabled = false;
         train.spline = targetTrail;
-        train.enabled = true;
     }
-
     private void SetCorrectDirection(Spline.Direction targetDirection)
     {
         if (targetDirection == Spline.Direction.Forward)
@@ -116,7 +132,6 @@ public class GameManager : MonoBehaviour
             train.followSpeed = -trailSpeed;
         }
     }
-
     private void BlockReverse()
     {
         if (upTrail == train.spline) upTrail = null;
@@ -124,36 +139,11 @@ public class GameManager : MonoBehaviour
         if (leftTrail == train.spline) leftTrail = null;
         if (rightTrail == train.spline) rightTrail = null;
     }
-
     private void ClearChoices()
     {
         leftTrail = null;
         rightTrail = null;
         upTrail = null;
         downTrail = null;
-    }
-
-    //JUNCTION APPROACH
-    private void LoadJunctionData()
-    {
-        //get the connected trails from the touched node
-        leftTrail = reachedNode.node.GetComponent<Junction>().leftTrail;
-        rightTrail = reachedNode.node.GetComponent<Junction>().rightTrail;
-        upTrail = reachedNode.node.GetComponent<Junction>().upTrail;
-        downTrail = reachedNode.node.GetComponent<Junction>().downTrail;
-
-        //get the correct follow direction for each connected trail from the node
-        leftDirection = reachedNode.node.GetComponent<Junction>().leftDirection;
-        rightDirection = reachedNode.node.GetComponent<Junction>().rightDirection;
-        upDirection = reachedNode.node.GetComponent<Junction>().upDirection;
-        downDirection = reachedNode.node.GetComponent<Junction>().downDirection;
-    }
-
-    private void ShowJunctionButtons()
-    {
-        if (leftTrail != null) UIController.LeftButton.SetActive(true);
-        if (rightTrail != null) UIController.RightButton.SetActive(true);
-        if (upTrail != null) UIController.UpButton.SetActive(true);
-        if (downTrail != null) UIController.DownButton.SetActive(true);
     }
 }
