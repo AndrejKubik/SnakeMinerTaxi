@@ -1,0 +1,4 @@
+- na svaku zeljenu putanju dodati triggere u jedan isti TRIGGER GROUP
+	- podesiti POSITION 
+	- TYPE -> DOUBLE
+	- WORK ONCE -> ENABLED

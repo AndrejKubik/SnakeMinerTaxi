@@ -4,29 +4,33 @@ using UnityEngine;
 using Dreamteck.Splines;
 using System;
 
-public class GameManager : MonoBehaviour
+public class TrainControl : MonoBehaviour
 {
-    public SplineFollower train;
+    public SplineFollower train; //the train itself
 
-    public static float trailSpeed;
+    [SerializeField] private float trainSpeed; //speed of the train
 
+    //current junction options
     private SplineComputer leftTrail;
     private SplineComputer rightTrail;
     private SplineComputer upTrail;
     private SplineComputer downTrail;
 
+    //current juncion path directions
     private Spline.Direction leftDirection;
     private Spline.Direction rightDirection;
     private Spline.Direction upDirection;
     private Spline.Direction downDirection;
 
-    private SplineTracer.NodeConnection reachedNode;
+    private SplineTracer.NodeConnection reachedNode; //current junction node
 
-    public bool nodeEntered;
+    private bool nodeEntered; //junction state
 
     private void Start()
     {
         train.onNode += NodeReached; //subscribe a method for the node touch event
+
+        train.followSpeed = trainSpeed;
     }
 
     //JUNCTION APPROACH
@@ -124,12 +128,12 @@ public class GameManager : MonoBehaviour
         if (targetDirection == Spline.Direction.Forward)
         {
             train.SetPercent(0.0);
-            train.followSpeed = trailSpeed;
+            train.followSpeed = trainSpeed;
         }
         else if (targetDirection == Spline.Direction.Backward)
         {
             train.SetPercent(1.0);
-            train.followSpeed = -trailSpeed;
+            train.followSpeed = -trainSpeed;
         }
     }
     private void BlockReverse()

@@ -1,0 +1,6 @@
+- povezati sve putanje sa NODOVIMA 
+
+- na svaki NODE objekat ubaciti JUNCTION komponentu i u njoj podesiti potrebne pravce i smerove koji izviru iz NODE-a
+(ako nekih nema, ostaviti polja za njih prazna)
+
+- u GAME MANAGER u polje PATHS prevuci sve putanje

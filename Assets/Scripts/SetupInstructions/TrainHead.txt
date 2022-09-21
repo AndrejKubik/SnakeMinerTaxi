@@ -1,0 +1,5 @@
+- dodati komponentu SPLINE FOLLOWER
+
+	- u polje SPLINE prevuci pocetnu putanju
+	- ako je potrebno podesiti START POSITION slider
+	- ukljuciti USE TRIGGERS opciju u TRACING DELU
