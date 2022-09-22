@@ -25,13 +25,12 @@ public class TrainControl : MonoBehaviour
     private SplineTracer.NodeConnection reachedNode; //current junction node
 
     private bool nodeEntered; //junction state
-    public int nodeCounter = 0;
 
     private void Start()
     {
         train.onNode += NodeReached; //subscribe a method for the node touch event
 
-        train.followSpeed = trainSpeed;
+        train.followSpeed = trainSpeed; //use the user-input train speed at start
     }
 
     //JUNCTION APPROACH
@@ -43,18 +42,18 @@ public class TrainControl : MonoBehaviour
         {
             reachedNode = passed[0]; //store the first touched node into a variable for simpliticy sake
 
-            if (!reachedNode.node.gameObject.CompareTag("Pickup"))
+            if(reachedNode.node.gameObject.CompareTag("Pickup"))
+            {
+                Debug.Log("Pickup");
+            }
+            else
             {
                 LoadJunctionData();
 
                 BlockReverse();
 
                 ShowJunctionButtons();
-
-                nodeCounter = 0;
             }
-            else if(reachedNode.node.gameObject.CompareTag("Pickup")) nodeCounter++;
-            
         }
     }
     private void LoadJunctionData()

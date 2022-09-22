@@ -1,4 +1,14 @@
-- na svaku zeljenu putanju dodati triggere u jedan isti TRIGGER GROUP
-	- podesiti POSITION 
-	- TYPE -> DOUBLE
-	- WORK ONCE -> ENABLED
+- Napraviti Empty GameObject(Pickups)
+
+- Pickups GameObject iz hijerarhije prevuci u polje PICKUPS PARENT na GAME MANAGER objektu
+
+- Na GAME MANAGER objektu u polje PICKUP PREAFB prevuci prefab pickup objekta iz project fajlova
+
+- Na svakom putu dodati nove POINT-ove jer se na njihovoj poziciji spawnuju PICKUP-i
+	- Selektovati zeljeni spline
+	- Dugme "+"
+	- Placement Mode -> Insert
+
+- OBAVEZNO proveriti na JUNCTION NODOVIMA konekciju sa putanjama zbog dodavanja novih POINT-ova
+	- Ako sve deluje ok, proveriti u Play Mode da li sve funkcionise
+	- Ako se na raskrsnici ne pojave dugmici za izbor dalje putanje, na svim raskrsnicama pobrisati konekcije sa putanjama i ponovo ih povezati!
