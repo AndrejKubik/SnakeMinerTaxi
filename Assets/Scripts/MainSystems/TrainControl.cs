@@ -25,6 +25,7 @@ public class TrainControl : MonoBehaviour
     private SplineTracer.NodeConnection reachedNode; //current junction node
 
     private bool nodeEntered; //junction state
+    public int nodeCounter = 0;
 
     private void Start()
     {
@@ -42,11 +43,18 @@ public class TrainControl : MonoBehaviour
         {
             reachedNode = passed[0]; //store the first touched node into a variable for simpliticy sake
 
-            LoadJunctionData();
+            if (!reachedNode.node.gameObject.CompareTag("Pickup"))
+            {
+                LoadJunctionData();
 
-            BlockReverse();
+                BlockReverse();
 
-            ShowJunctionButtons();
+                ShowJunctionButtons();
+
+                nodeCounter = 0;
+            }
+            else if(reachedNode.node.gameObject.CompareTag("Pickup")) nodeCounter++;
+            
         }
     }
     private void LoadJunctionData()
