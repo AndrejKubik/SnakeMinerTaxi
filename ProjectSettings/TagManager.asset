@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Junction
   - Pickup
+  - Wagon
   layers:
   - Default
   - TransparentFX

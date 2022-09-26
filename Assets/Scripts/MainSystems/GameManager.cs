@@ -29,16 +29,23 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int snakeGap;
     public static int SnakeGap;
 
+    public static int numberOfPickups = 0;
+
     private void Start()
     {
-        WagonPrefab = wagonPrefab;
-        SnakeGap = snakeGap;
+        LoadStaticVariables();
 
         LoadPickupSpawnData();
 
         SpawnPickupObjects();
 
         //GeneratePickupTriggers();
+    }
+
+    private void LoadStaticVariables()
+    {
+        WagonPrefab = wagonPrefab;
+        SnakeGap = snakeGap;
     }
 
     private void LoadPickupSpawnData()
@@ -50,7 +57,7 @@ public class GameManager : MonoBehaviour
             for(int i = 1; i < points.Length - 1; i++)
             {
                 triggerWorldPositions.Add(points[i].position); //store the point's world position for the pickup prefab spawn
-                triggerSplinePositions.Add(path.GetPointPercent(i)); //store the point's distance percent along the current spline for the trigger generation 
+                //triggerSplinePositions.Add(path.GetPointPercent(i)); //store the point's distance percent along the current spline for the trigger generation 
             }
         }
     }
@@ -61,6 +68,7 @@ public class GameManager : MonoBehaviour
         {
             GameObject pickup = Instantiate(pickupPrefab, triggerWorldPositions[i], transform.rotation, pickupsParent); //spawn a pickup prefab as a child object of the Pickups parent
             pickup.name = "Pickup" + (i + 1); //change the spawned object's name for simplicity sake
+            numberOfPickups++;
         }
     }
 
