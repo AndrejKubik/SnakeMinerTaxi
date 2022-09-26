@@ -6,6 +6,15 @@ using UnityEngine.UIElements;
 
 public class GameManager : MonoBehaviour
 {
+    #region Singleton
+    public static GameManager instance;
+
+    private void Awake()
+    {
+        instance = this;
+    }
+    #endregion
+
     public List<SplineComputer> paths;
 
     public List<Vector3> triggerWorldPositions;
@@ -14,8 +23,17 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Transform pickupsParent;
     [SerializeField] private GameObject pickupPrefab;
 
+    [SerializeField] private GameObject wagonPrefab;
+    public static GameObject WagonPrefab;
+
+    [SerializeField] private int snakeGap;
+    public static int SnakeGap;
+
     private void Start()
     {
+        WagonPrefab = wagonPrefab;
+        SnakeGap = snakeGap;
+
         LoadPickupSpawnData();
 
         SpawnPickupObjects();

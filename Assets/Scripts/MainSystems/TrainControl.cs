@@ -8,7 +8,11 @@ public class TrainControl : MonoBehaviour
 {
     public SplineFollower train; //the train itself
 
-    [SerializeField] private float trainSpeed; //speed of the train
+    //speed of the train
+    [SerializeField] private float trainSpeed;
+    public static float TrainSpeed;
+
+    public static bool IsMoving = true; //current movement state of the train, set to true since the train doesn't start at a junction but before it
 
     //current junction options
     private SplineComputer leftTrail;
@@ -28,9 +32,11 @@ public class TrainControl : MonoBehaviour
 
     private void Start()
     {
+        TrainSpeed = trainSpeed;
+
         train.onNode += NodeReached; //subscribe a method for the node touch event
 
-        train.followSpeed = trainSpeed; //use the user-input train speed at start
+        train.followSpeed = TrainSpeed; //use the user-input train speed at start
     }
 
     //JUNCTION APPROACH
@@ -40,20 +46,15 @@ public class TrainControl : MonoBehaviour
 
         if (nodeEntered) //if the junction has just been entered
         {
+            IsMoving = false;
+
             reachedNode = passed[0]; //store the first touched node into a variable for simpliticy sake
 
-            if(reachedNode.node.gameObject.CompareTag("Pickup"))
-            {
-                Debug.Log("Pickup");
-            }
-            else
-            {
-                LoadJunctionData();
+            LoadJunctionData();
 
-                BlockReverse();
+            BlockReverse();
 
-                ShowJunctionButtons();
-            }
+            ShowJunctionButtons();
         }
     }
     private void LoadJunctionData()
@@ -135,13 +136,15 @@ public class TrainControl : MonoBehaviour
         if (targetDirection == Spline.Direction.Forward)
         {
             train.SetPercent(0.0);
-            train.followSpeed = trainSpeed;
+            train.followSpeed = TrainSpeed;
         }
         else if (targetDirection == Spline.Direction.Backward)
         {
             train.SetPercent(1.0);
-            train.followSpeed = -trainSpeed;
+            train.followSpeed = -TrainSpeed;
         }
+
+        IsMoving = true;
     }
     private void BlockReverse()
     {
